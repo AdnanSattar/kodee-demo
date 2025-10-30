@@ -76,6 +76,6 @@ def return_temperature_float_value(temperature: Union[GPTTemperature, float]) ->
     elif isinstance(temperature, float):
         return temperature
     else:
-        raise ValueError(
+        raise TypeError(
             "GPT Temperature must be a GPTTemperature enum member or a float."
         )

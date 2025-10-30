@@ -22,6 +22,8 @@ from app.utils.logger.logger import Logger
 
 TIMEOUT_SECONDS = 45
 DEFAULT_MAX_TOKENS = 2048
+if not OPENAI_API_KEY:
+    raise RuntimeError("OPENAI_API_KEY environment variable is required")
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY, timeout=TIMEOUT_SECONDS)
 
 logger = Logger()
@@ -55,7 +57,6 @@ class OpenAIChat:
                 messages=messages,
                 model=model,
                 response_format={"type": response_format},
-                timeout=TIMEOUT_SECONDS,
                 temperature=return_temperature_float_value(temperature),
                 max_tokens=max_tokens,
             )
@@ -82,14 +83,19 @@ class OpenAIChat:
             return response
         except Exception as e:
             logger.log(
-                f"Exception in get_response: {e}",
+                "GPT Exception occurred in get_response",
                 level=logging.ERROR,
+                service="OpenAI",
+                payload=str(e),
                 model=model,
                 action_name=action_name,
+                method_name="get_response",
                 team_name=team_name,
                 chatbot_name=chatbot_name,
+                exception_type=type(e).__name__,
+                conversation_messages=filter_out_system_messages(messages),
             )
-            raise
+        raise
 
     @openai_retry_strategy
     async def get_response_with_tools(
@@ -115,7 +121,6 @@ class OpenAIChat:
                 response_format={"type": response_format},
                 temperature=return_temperature_float_value(temperature),
                 max_tokens=max_tokens,
-                timeout=TIMEOUT_SECONDS,
             )
 
             process_time = time() - start_time
@@ -141,8 +146,8 @@ class OpenAIChat:
             return response
         except Exception as e:
             logger.log(
-                "GPT Exception occurred",
-                level=logging.WARNING,
+                f"GPT Exception occurred",
+                level=logging.ERROR,
                 service="OpenAI",
                 payload=str(e),
                 model_name=model,
