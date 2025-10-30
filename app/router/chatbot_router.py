@@ -12,8 +12,6 @@ from app.router.support_handoff_decider import (
 from app.utils.logger.logger import Logger
 
 logger = Logger()
-MAXIMUM_OUT_OF_SCOPE_ATTEMPTS = 3
-
 
 class ChatbotRouter:
     def __init__(self):
