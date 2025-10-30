@@ -1,5 +1,6 @@
-from typing import List, Optional, Dict
-from models.redis_messages_model import RedisMessages
+from typing import Dict, List, Optional
+
+from app.models.redis_messages_model import RedisMessages
 
 
 async def filter_history_messages(

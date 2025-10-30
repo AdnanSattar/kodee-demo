@@ -1,10 +1,12 @@
 import json
-import redis.asyncio as redis
 from enum import IntEnum
-from typing import Any, Optional, List
-from redis_services.redis_enums import RedisExpiration
-from utils.env_constants import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
-from utils.logger.logger import Logger
+from typing import Any, List, Optional
+
+import redis.asyncio as redis
+
+from app.redis_services.redis_enums import RedisExpiration
+from app.utils.env_constants import REDIS_HOST, REDIS_PASSWORD, REDIS_PORT
+from app.utils.logger.logger import Logger
 
 REDIS_SOCKET_TIMEOUT = 10
 REDIS_CONNECT_TIMEOUT = 5
@@ -47,7 +49,9 @@ class RedisClient:
             logger.log(f"Redis: Error getting key {key}", payload=str(e))
             return None
 
-    async def setex(self, key: str, expiration_time: RedisExpiration, value: Any) -> bool:
+    async def setex(
+        self, key: str, expiration_time: RedisExpiration, value: Any
+    ) -> bool:
         try:
             if isinstance(expiration_time, IntEnum):
                 expiration_time = expiration_time.value
@@ -55,7 +59,8 @@ class RedisClient:
             return True
         except redis.RedisError as e:
             logger.log(
-                f"Redis: Error setting key {key} with value {value} for {expiration_time} seconds", payload=str(e)
+                f"Redis: Error setting key {key} with value {value} for {expiration_time} seconds",
+                payload=str(e),
             )
             return False
 

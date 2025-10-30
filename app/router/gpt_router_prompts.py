@@ -1,4 +1,4 @@
-from models.chat.chat_message_input_model import ChatbotLabel
+from app.models.chat.chat_message_input_model import ChatbotLabel
 
 # This message is used, if GPT failed to generate a handoff message
 DEFAULT_HANDOFF_MESSAGE = (
@@ -9,7 +9,9 @@ DEFAULT_HANDOFF_MESSAGE = (
 )
 
 # This message is used, if GPT failed to generate a handoff clarify message
-DEFAULT_HANDOFF_CLARIFY_MESSAGE = "Could you please provide more details about the issue you're facing?"
+DEFAULT_HANDOFF_CLARIFY_MESSAGE = (
+    "Could you please provide more details about the issue you're facing?"
+)
 
 CHATBOT_DESCRIPTIONS = {
     ChatbotLabel.DOMAIN: """

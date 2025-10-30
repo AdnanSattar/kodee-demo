@@ -1,13 +1,15 @@
 import json
-from typing import Dict, Any, List, Union
+from typing import Any, Dict, List, Union
+
 from openai.types.chat import ChatCompletionMessageToolCall
-from api.external.gpt_clients.gpt_enums import GPTRole, GPTTemperature
-from models.chat.chat_message_input_model import InputRole
-from models.redis_messages_model import RedisMessages
-from redis_services.redis_message_formatter import filter_history_messages
-from models.chat.chat_message_output_model import OutputRole
-from utils.logger.logger import Logger
-from redis_services.redis_methods import fetch_entire_conversation_history
+
+from app.api.external.gpt_clients.gpt_enums import GPTRole, GPTTemperature
+from app.models.chat.chat_message_input_model import InputRole
+from app.models.chat.chat_message_output_model import OutputRole
+from app.models.redis_messages_model import RedisMessages
+from app.redis_services.redis_message_formatter import filter_history_messages
+from app.redis_services.redis_methods import fetch_entire_conversation_history
+from app.utils.logger.logger import Logger
 
 logger = Logger()
 
@@ -20,13 +22,17 @@ def decode_json_string(json_string):
         return None
 
 
-async def get_conversation_history_with_system_prompt(system_description: str, conversation_id: str) -> list[dict]:
+async def get_conversation_history_with_system_prompt(
+    system_description: str, conversation_id: str
+) -> list[dict]:
     historical_messages = await filter_history_messages(
         await fetch_entire_conversation_history(conversation_id=conversation_id),
         exclude_fields=["tool_calls"],
         exclude_if_field_matches={"role": OutputRole.TOOL},
     )
-    return [{"role": GPTRole.SYSTEM, "content": system_description}] + historical_messages
+    return [
+        {"role": GPTRole.SYSTEM, "content": system_description}
+    ] + historical_messages
 
 
 async def trim_to_earliest_user_message(history_data: List[Dict]) -> List[Dict]:
@@ -41,7 +47,9 @@ async def trim_to_earliest_user_message(history_data: List[Dict]) -> List[Dict]:
     return trimmed_history_data
 
 
-async def build_tool_call_info(tool_call: ChatCompletionMessageToolCall) -> Dict[str, Any]:
+async def build_tool_call_info(
+    tool_call: ChatCompletionMessageToolCall,
+) -> Dict[str, Any]:
     return {
         "id": tool_call.id,
         "type": "function",
@@ -63,4 +71,6 @@ def return_temperature_float_value(temperature: Union[GPTTemperature, float]) ->
     elif isinstance(temperature, float):
         return temperature
     else:
-        raise ValueError("GPT Temperature must be a GPTTemperature enum member or a float.")
+        raise ValueError(
+            "GPT Temperature must be a GPTTemperature enum member or a float."
+        )

@@ -1,13 +1,15 @@
-from database.database_calls import postgres_database
-from database.database_models.history_table_model import HistoryTable, AuthorType
-from database.database_models.events_table_model import EventsTable, EventType
-from models.chat.chat_message_input_model import ChatMessage
-from models.gpt_function_param_model import DefaultGPTFunctionParams
-from models.handler_response_model import HandlerResponse
-from redis_services.redis_methods import get_assistant_part_id, get_user_part_id
+from app.database.database_calls import postgres_database
+from app.database.database_models.events_table_model import EventsTable, EventType
+from app.database.database_models.history_table_model import AuthorType, HistoryTable
+from app.models.chat.chat_message_input_model import ChatMessage
+from app.models.gpt_function_param_model import DefaultGPTFunctionParams
+from app.models.handler_response_model import HandlerResponse
+from app.redis_services.redis_methods import get_assistant_part_id, get_user_part_id
 
 
-async def log_user_message_interaction(user_id: str, conversation_id: str, message: ChatMessage) -> None:
+async def log_user_message_interaction(
+    user_id: str, conversation_id: str, message: ChatMessage
+) -> None:
     user_part_id = await get_user_part_id(user_id)
 
     await postgres_database.insert_into_events_table(

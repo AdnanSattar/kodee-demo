@@ -1,6 +1,6 @@
-from models.gpt_function_output_model import GPTFunctionOutput, OutputStatus
-from models.gpt_function_param_model import DefaultGPTFunctionParams
-from utils.function_decorator import meta
+from app.models.gpt_function_output_model import GPTFunctionOutput, OutputStatus
+from app.models.gpt_function_param_model import DefaultGPTFunctionParams
+from app.utils.function_decorator import meta
 
 
 @meta(
@@ -18,7 +18,9 @@ from utils.function_decorator import meta
         "required": ["question"],
     },
 )
-async def oos_get_knowledge(_: DefaultGPTFunctionParams, question: str = None) -> GPTFunctionOutput:
+async def oos_get_knowledge(
+    _: DefaultGPTFunctionParams, question: str = None
+) -> GPTFunctionOutput:
     if question is None:
         return GPTFunctionOutput(
             status=OutputStatus.SUCCESS,

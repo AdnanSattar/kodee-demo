@@ -1,14 +1,28 @@
-from api.external.gpt_clients.gpt_enums import GPTTeamNames, GPTTemperature, GPTRole
-from api.external.gpt_clients.gpt_enums import GPTResponseFormat, GPTActionNames
-from helpers.tenacity_retry_strategies import handoff_retry_strategy, handoff_support_message_retry_strategy
-from helpers.custom_exceptions import InvalidGPTResponseException
-from utils.logger.logger import Logger
-from helpers.gpt_helper import decode_json_string, get_conversation_history_with_system_prompt
-from router.gpt_router_prompts import get_is_handoff_needed_prompt, get_handoff_message_prompt
 import logging
-from api.external.gpt_clients.openai.openai_client import OpenAIChat
-from api.external.gpt_clients.openai.openai_enums import OpenAIModel
 
+from app.api.external.gpt_clients.gpt_enums import (
+    GPTActionNames,
+    GPTResponseFormat,
+    GPTRole,
+    GPTTeamNames,
+    GPTTemperature,
+)
+from app.api.external.gpt_clients.openai.openai_client import OpenAIChat
+from app.api.external.gpt_clients.openai.openai_enums import OpenAIModel
+from app.helpers.custom_exceptions import InvalidGPTResponseException
+from app.helpers.gpt_helper import (
+    decode_json_string,
+    get_conversation_history_with_system_prompt,
+)
+from app.helpers.tenacity_retry_strategies import (
+    handoff_retry_strategy,
+    handoff_support_message_retry_strategy,
+)
+from app.router.gpt_router_prompts import (
+    get_handoff_message_prompt,
+    get_is_handoff_needed_prompt,
+)
+from app.utils.logger.logger import Logger
 
 openai_client = OpenAIChat()
 logger = Logger()
@@ -16,7 +30,9 @@ logger = Logger()
 
 @handoff_retry_strategy
 async def is_seeking_human_assistance(conversation_id: str, user_id: str) -> bool:
-    messages = await get_conversation_history_with_system_prompt(get_is_handoff_needed_prompt(), conversation_id)
+    messages = await get_conversation_history_with_system_prompt(
+        get_is_handoff_needed_prompt(), conversation_id
+    )
     gpt_response = await openai_client.get_response(
         messages=messages,
         action_name=GPTActionNames.HANDOFF_DECIDER_ACTION,
@@ -35,7 +51,9 @@ async def is_seeking_human_assistance(conversation_id: str, user_id: str) -> boo
         )
         raise InvalidGPTResponseException("GPT failed to generate a response.")
 
-    decoded_handoff_boolean = decode_json_string(gpt_response.choices[0].message.content)
+    decoded_handoff_boolean = decode_json_string(
+        gpt_response.choices[0].message.content
+    )
     if not decoded_handoff_boolean:
         logger.log(
             "is_seeking_human_assistance: GPT response was not valid JSON.",
@@ -46,7 +64,9 @@ async def is_seeking_human_assistance(conversation_id: str, user_id: str) -> boo
         )
         raise InvalidGPTResponseException("GPT response was not valid JSON.")
 
-    decoded_handoff_boolean = decoded_handoff_boolean.get("is_seeking_human_assistance", {})
+    decoded_handoff_boolean = decoded_handoff_boolean.get(
+        "is_seeking_human_assistance", {}
+    )
 
     if isinstance(decoded_handoff_boolean, int):
         decoded_handoff_boolean = bool(decoded_handoff_boolean)

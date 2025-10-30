@@ -2,8 +2,9 @@ import importlib
 import inspect
 import os
 import sys
-from typing import Dict, Any, List
-from utils.logger.logger import Logger
+from typing import Any, Dict, List
+
+from app.utils.logger.logger import Logger
 
 logger = Logger()
 
@@ -19,7 +20,11 @@ async def compile_function_metadata(current_handler_dir: str) -> List[Dict[str, 
     if functions_dir not in sys.path:
         sys.path.insert(0, functions_dir)
 
-    function_files = [f[:-3] for f in os.listdir(functions_dir) if f.endswith(".py") and not f.startswith("__")]
+    function_files = [
+        f[:-3]
+        for f in os.listdir(functions_dir)
+        if f.endswith(".py") and not f.startswith("__")
+    ]
 
     for module_name in function_files:
         module = importlib.import_module(module_name)
@@ -44,7 +49,11 @@ async def compile_function_map(current_handler_dir: str) -> Dict[str, Any]:
     if functions_dir not in sys.path:
         sys.path.insert(0, functions_dir)
 
-    function_files = [f[:-3] for f in os.listdir(functions_dir) if f.endswith(".py") and not f.startswith("__")]
+    function_files = [
+        f[:-3]
+        for f in os.listdir(functions_dir)
+        if f.endswith(".py") and not f.startswith("__")
+    ]
 
     for module_name in function_files:
         module = importlib.import_module(module_name)

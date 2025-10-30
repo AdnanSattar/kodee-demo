@@ -1,7 +1,7 @@
-from database.helpers import insert_function_log
-from models.gpt_function_param_model import DefaultGPTFunctionParams
-from models.gpt_function_output_model import GPTFunctionOutput, OutputStatus
-from utils.function_decorator import meta
+from app.database.helpers import insert_function_log
+from app.models.gpt_function_output_model import GPTFunctionOutput, OutputStatus
+from app.models.gpt_function_param_model import DefaultGPTFunctionParams
+from app.utils.function_decorator import meta
 
 
 @meta(
@@ -13,14 +13,18 @@ from utils.function_decorator import meta
             "domain_name": {
                 "type": "string",
                 "description": "The domain name with subdomain if there is, e.g. hostinger.com or www.hostinger.com. "
-                               "Always ask the user to input it. If TLD not provided, ask the user to provide it.",
+                "Always ask the user to input it. If TLD not provided, ask the user to provide it.",
             },
         },
     },
 )
-async def domain_change_dns_records(data: DefaultGPTFunctionParams, domain_name: str = None) -> GPTFunctionOutput:
+async def domain_change_dns_records(
+    data: DefaultGPTFunctionParams, domain_name: str = None
+) -> GPTFunctionOutput:
     # EXAMPLE OF FUNCTION LOGGING
-    await insert_function_log(data, {"message": "domain_change_dns_records LOG HERE", "domain": domain_name})
+    await insert_function_log(
+        data, {"message": "domain_change_dns_records LOG HERE", "domain": domain_name}
+    )
 
     return GPTFunctionOutput(
         status=OutputStatus.SUCCESS,

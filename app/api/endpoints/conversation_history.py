@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Query
-from services.history.history_events import history_events_service
-from services.history.history_messages import history_messages_service
+
+from app.services.history.history_events import history_events_service
+from app.services.history.history_messages import history_messages_service
 
 history_router = APIRouter()
 

@@ -1,9 +1,9 @@
-from tenacity import retry, stop_after_attempt, retry_if_exception_type
-from helpers.custom_exceptions import InvalidGPTResponseException
 from fastapi import HTTPException, status
+from tenacity import retry, retry_if_exception_type, stop_after_attempt
 
-from models.chat.chat_message_input_model import ChatbotLabel
-from router.gpt_router_prompts import DEFAULT_HANDOFF_MESSAGE
+from app.helpers.custom_exceptions import InvalidGPTResponseException
+from app.models.chat.chat_message_input_model import ChatbotLabel
+from app.router.gpt_router_prompts import DEFAULT_HANDOFF_MESSAGE
 
 TENACITY_RETRY_ATTEMPTS = 3
 PART_ID_ERROR_INDICATOR = "ERROR_RETRIEVING_PART_ID"
@@ -53,4 +53,6 @@ chatbot_label_retry_strategy = retry(
 
 
 def raise_gpt_exception():
-    raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="GPT Failed to respond")
+    raise HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="GPT Failed to respond"
+    )

@@ -1,10 +1,11 @@
+import os
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-from migrations.models import Base
+
 from alembic import context
 from dotenv import load_dotenv
-import os
+from sqlalchemy import engine_from_config, pool
+
+from migrations.models import Base
 
 config = context.config
 
@@ -19,10 +20,12 @@ config = context.config
 
 username = os.getenv("DB_USERNAME")
 password = os.getenv("DB_PASSWORD")
-host = "localhost"
+host = os.getenv("DB_HOST", "db")
 dbname = os.getenv("DB_NAME")
 
-config.set_main_option("sqlalchemy.url", f"postgresql://{username}:{password}@{host}/{dbname}")
+config.set_main_option(
+    "sqlalchemy.url", f"postgresql://{username}:{password}@{host}/{dbname}"
+)
 
 
 def run_migrations_offline() -> None:

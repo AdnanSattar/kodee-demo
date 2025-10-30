@@ -1,22 +1,24 @@
-from typing import List, Dict, Any, Optional
+import logging
+from time import time
+from typing import Any, Dict, List, Optional
+
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletion
-from api.external.gpt_clients.cost_calculation_helpers import calculate_openai_cost
-from api.external.gpt_clients.gpt_enums import (
-    GPTResponseFormat,
-    GPTChatbotNames,
-    GPTTeamNames,
+
+from app.api.external.gpt_clients.cost_calculation_helpers import calculate_openai_cost
+from app.api.external.gpt_clients.gpt_enums import (
     GPTActionNames,
+    GPTChatbotNames,
+    GPTResponseFormat,
+    GPTTeamNames,
     GPTTemperature,
 )
-from api.external.gpt_clients.openai.openai_enums import OpenAIModel
-from helpers.conversation import filter_out_system_messages
-from helpers.gpt_helper import return_temperature_float_value
-from helpers.tenacity_retry_strategies import openai_retry_strategy
-from utils.logger.logger import Logger
-from utils.env_constants import OPENAI_API_KEY
-from time import time
-import logging
+from app.api.external.gpt_clients.openai.openai_enums import OpenAIModel
+from app.helpers.conversation import filter_out_system_messages
+from app.helpers.gpt_helper import return_temperature_float_value
+from app.helpers.tenacity_retry_strategies import openai_retry_strategy
+from app.utils.env_constants import OPENAI_API_KEY
+from app.utils.logger.logger import Logger
 
 TIMEOUT_SECONDS = 45
 DEFAULT_MAX_TOKENS = 2048
@@ -28,15 +30,15 @@ logger = Logger()
 class OpenAIChat:
     @openai_retry_strategy
     async def get_response(
-            self,
-            messages: List[dict],
-            model: OpenAIModel,
-            action_name: GPTActionNames,
-            team_name: GPTTeamNames,
-            chatbot_name: Optional[GPTChatbotNames] = None,
-            response_format: GPTResponseFormat = GPTResponseFormat.TEXT,
-            temperature: GPTTemperature = GPTTemperature.POINT_FIVE,
-            max_tokens: int = DEFAULT_MAX_TOKENS,
+        self,
+        messages: List[dict],
+        model: OpenAIModel,
+        action_name: GPTActionNames,
+        team_name: GPTTeamNames,
+        chatbot_name: Optional[GPTChatbotNames] = None,
+        response_format: GPTResponseFormat = GPTResponseFormat.TEXT,
+        temperature: GPTTemperature = GPTTemperature.POINT_FIVE,
+        max_tokens: int = DEFAULT_MAX_TOKENS,
     ) -> ChatCompletion | None:
         try:
             start_time = time()
@@ -51,7 +53,9 @@ class OpenAIChat:
             )
 
             process_time = time() - start_time
-            total_cost = calculate_openai_cost(model, response.usage.prompt_tokens, response.usage.completion_tokens)
+            total_cost = calculate_openai_cost(
+                model, response.usage.prompt_tokens, response.usage.completion_tokens
+            )
 
             logger.log(
                 "OpenAI Token usage",
@@ -86,16 +90,16 @@ class OpenAIChat:
 
     @openai_retry_strategy
     async def get_response_with_tools(
-            self,
-            messages: List[dict],
-            action_name: GPTActionNames,
-            team_name: GPTTeamNames,
-            chatbot_name: GPTChatbotNames,
-            tools: List[Dict[str, Any]],
-            model: OpenAIModel,
-            response_format: GPTResponseFormat = GPTResponseFormat.TEXT,
-            temperature: GPTTemperature = GPTTemperature.POINT_FIVE,
-            max_tokens: int = DEFAULT_MAX_TOKENS,
+        self,
+        messages: List[dict],
+        action_name: GPTActionNames,
+        team_name: GPTTeamNames,
+        chatbot_name: GPTChatbotNames,
+        tools: List[Dict[str, Any]],
+        model: OpenAIModel,
+        response_format: GPTResponseFormat = GPTResponseFormat.TEXT,
+        temperature: GPTTemperature = GPTTemperature.POINT_FIVE,
+        max_tokens: int = DEFAULT_MAX_TOKENS,
     ) -> ChatCompletion | None:
         try:
             start_time = time()
@@ -112,7 +116,9 @@ class OpenAIChat:
             )
 
             process_time = time() - start_time
-            total_cost = calculate_openai_cost(model, response.usage.prompt_tokens, response.usage.completion_tokens)
+            total_cost = calculate_openai_cost(
+                model, response.usage.prompt_tokens, response.usage.completion_tokens
+            )
             logger.log(
                 "OpenAI With Tools Token usage",
                 team_name=team_name,
@@ -122,7 +128,9 @@ class OpenAIChat:
                 prompt_tokens=response.usage.prompt_tokens,
                 completion_tokens=response.usage.completion_tokens,
                 total_tokens=response.usage.total_tokens,
-                requests=self.get_response_with_tools.retry.statistics.get("attempt_number"),
+                requests=self.get_response_with_tools.retry.statistics.get(
+                    "attempt_number"
+                ),
                 response_time=process_time,
                 cost=total_cost,
             )

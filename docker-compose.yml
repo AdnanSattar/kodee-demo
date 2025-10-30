@@ -21,11 +21,12 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
 
   db:
-    image: postgres
+    image: postgres:16
     ports:
       - "5432:5432"
     volumes:
-      - ~/apps23/postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/app/migrations
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USERNAME}

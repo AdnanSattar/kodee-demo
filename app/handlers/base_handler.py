@@ -1,25 +1,36 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict
+from typing import Dict, List
+
 from openai.types.chat import ChatCompletion, ChatCompletionMessageToolCall
-from database.database_calls import postgres_database
-from database.database_models.events_table_model import EventsTable, EventType
-from api.external.gpt_clients.gpt_enums import GPTRole, GPTTeamNames, GPTActionNames, GPTChatbotNames, GPTTemperature
-from helpers.gpt_helper import trim_to_earliest_user_message
-from models.handler_config_model import HandlerConfigModel
-from redis_services.redis_message_formatter import filter_history_messages
-from models.gpt_function_param_model import DefaultGPTFunctionParams
-from models.handler_response_model import HandlerResponse
-from models.redis_messages_model import RedisMessages
-from utils.logger.logger import Logger
-from redis_services.redis_methods import (
-    push_message_to_redis,
-    get_assistant_part_id,
-    fetch_latest_conversation_messages,
+
+from app.api.external.gpt_clients.gpt_enums import (
+    GPTActionNames,
+    GPTChatbotNames,
+    GPTRole,
+    GPTTeamNames,
+    GPTTemperature,
 )
-from models.chat.chat_message_input_model import ChatMessage
-from utils.get_handler_functions import compile_function_metadata, compile_function_map
-from api.external.gpt_clients.openai.openai_client import OpenAIChat
-from api.external.gpt_clients.openai.openai_enums import OpenAIModel
+from app.api.external.gpt_clients.openai.openai_client import OpenAIChat
+from app.api.external.gpt_clients.openai.openai_enums import OpenAIModel
+from app.database.database_calls import postgres_database
+from app.database.database_models.events_table_model import EventsTable, EventType
+from app.helpers.gpt_helper import trim_to_earliest_user_message
+from app.models.chat.chat_message_input_model import ChatMessage
+from app.models.gpt_function_param_model import DefaultGPTFunctionParams
+from app.models.handler_config_model import HandlerConfigModel
+from app.models.handler_response_model import HandlerResponse
+from app.models.redis_messages_model import RedisMessages
+from app.redis_services.redis_message_formatter import filter_history_messages
+from app.redis_services.redis_methods import (
+    fetch_latest_conversation_messages,
+    get_assistant_part_id,
+    push_message_to_redis,
+)
+from app.utils.get_handler_functions import (
+    compile_function_map,
+    compile_function_metadata,
+)
+from app.utils.logger.logger import Logger
 
 logger = Logger()
 openai_client = OpenAIChat()
@@ -68,7 +79,9 @@ class BaseChatHandler(ABC):
 
     async def get_latest_conversation_messages_history(self) -> List[Dict]:
         conversation_messages = await filter_history_messages(
-            await fetch_latest_conversation_messages(conversation_id=self.conversation_id)
+            await fetch_latest_conversation_messages(
+                conversation_id=self.conversation_id
+            )
         )
 
         return await trim_to_earliest_user_message(conversation_messages)
@@ -79,10 +92,15 @@ class BaseChatHandler(ABC):
         ] + await self.get_latest_conversation_messages_history()
 
     async def push_function_response_to_redis(self, message: RedisMessages) -> None:
-        return await push_message_to_redis(user_id=self.user_id, conversation_id=self.conversation_id, message=message)
+        return await push_message_to_redis(
+            user_id=self.user_id, conversation_id=self.conversation_id, message=message
+        )
 
     async def get_gpt_with_tools_response(
-        self, action_name: GPTActionNames, team_name: GPTTeamNames, chatbot_name: GPTChatbotNames
+        self,
+        action_name: GPTActionNames,
+        team_name: GPTTeamNames,
+        chatbot_name: GPTChatbotNames,
     ) -> ChatCompletion:
         return await openai_client.get_response_with_tools(
             messages=await self.format_chat_history_with_prompt(),
@@ -94,7 +112,9 @@ class BaseChatHandler(ABC):
             temperature=self.get_temperature(),
         )
 
-    async def insert_tool_call_into_events_table(self, tool_calls: List[ChatCompletionMessageToolCall]) -> None:
+    async def insert_tool_call_into_events_table(
+        self, tool_calls: List[ChatCompletionMessageToolCall]
+    ) -> None:
         await postgres_database.insert_into_events_table(
             EventsTable(
                 conversation_id=self.conversation_id,
@@ -104,7 +124,10 @@ class BaseChatHandler(ABC):
                         {
                             "id": tool_call.id,
                             "type": tool_call.type,
-                            "function": {"arguments": tool_call.function.arguments, "name": tool_call.function.name},
+                            "function": {
+                                "arguments": tool_call.function.arguments,
+                                "name": tool_call.function.name,
+                            },
                         }
                         for tool_call in tool_calls
                     ],
@@ -119,7 +142,9 @@ class BaseChatHandler(ABC):
             user_id=self.user_id,
         )
 
-    async def is_gpt_generated_tools_valid(self, tool_calls: List[ChatCompletionMessageToolCall]) -> bool:
+    async def is_gpt_generated_tools_valid(
+        self, tool_calls: List[ChatCompletionMessageToolCall]
+    ) -> bool:
         for tool_call in tool_calls:
             function_name = tool_call.function.name
             if not self.function_map.get(function_name):

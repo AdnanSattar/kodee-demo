@@ -1,7 +1,9 @@
 def calculate_openai_cost(model, prompt_tokens, completion_tokens) -> float | str:
     if model in openai_pricing_per_1k_tokens:
         pricing = openai_pricing_per_1k_tokens[model]
-        total_cost = (prompt_tokens * pricing["prompt"] / 1000) + (completion_tokens * pricing["completion"] / 1000)
+        total_cost = (prompt_tokens * pricing["prompt"] / 1000) + (
+            completion_tokens * pricing["completion"] / 1000
+        )
         return total_cost
     else:
         return "Model not found"

@@ -1,7 +1,9 @@
-from typing import Optional
-from pydantic import BaseModel
 from enum import Enum
-from models.chat.chat_message_output_model import OutputChatbotLabel
+from typing import Optional
+
+from pydantic import BaseModel
+
+from app.models.chat.chat_message_output_model import OutputChatbotLabel
 
 
 class HandlerResponseStatus(str, Enum):

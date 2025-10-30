@@ -3,11 +3,11 @@ from typing import AsyncGenerator
 
 from fastapi import FastAPI
 
-from api.endpoints.chat import chat_router
-from api.endpoints.conversation_history import history_router
-from database.database_calls import AsyncPostgreSQLDatabase
-from redis_services.redis_client import RedisClient
-from middleware.global_exception_handler import global_exception_handler
+from app.api.endpoints.chat import chat_router
+from app.api.endpoints.conversation_history import history_router
+from app.database.database_calls import AsyncPostgreSQLDatabase
+from app.middleware.global_exception_handler import global_exception_handler
+from app.redis_services.redis_client import RedisClient
 
 postgres_database = AsyncPostgreSQLDatabase()
 

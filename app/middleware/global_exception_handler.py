@@ -1,6 +1,7 @@
-from fastapi import status, Request
+from fastapi import Request, status
 from fastapi.responses import JSONResponse
-from utils.logger.logger import Logger
+
+from app.utils.logger.logger import Logger
 
 logger = Logger()
 

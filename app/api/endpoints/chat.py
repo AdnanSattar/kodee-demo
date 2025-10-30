@@ -1,11 +1,12 @@
 from fastapi import APIRouter
-from models.chat.chat_initialization_input_model import ChatInitializationInputModel
-from models.chat.chat_message_input_model import ChatMessage
-from models.chat.chat_message_output_model import ConversationMessagesOutput
-from models.chat.chat_restart_input_model import ChatRestartInputModel
-from services.chat_services.chat_respond import chat_service
-from services.chat_services.chat_initialization import chat_initialization_service
-from services.chat_services.chat_restart import restart_conversation_service
+
+from app.models.chat.chat_initialization_input_model import ChatInitializationInputModel
+from app.models.chat.chat_message_input_model import ChatMessage
+from app.models.chat.chat_message_output_model import ConversationMessagesOutput
+from app.models.chat.chat_restart_input_model import ChatRestartInputModel
+from app.services.chat_services.chat_initialization import chat_initialization_service
+from app.services.chat_services.chat_respond import chat_service
+from app.services.chat_services.chat_restart import restart_conversation_service
 
 chat_router = APIRouter()
 

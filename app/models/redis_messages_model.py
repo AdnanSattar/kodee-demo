@@ -1,7 +1,9 @@
-from typing import Optional, List, Dict, Union
+from typing import Dict, List, Optional, Union
+
 from pydantic import BaseModel, model_validator
-from models.chat.chat_message_input_model import InputRole
-from models.chat.chat_message_output_model import OutputRole
+
+from app.models.chat.chat_message_input_model import InputRole
+from app.models.chat.chat_message_output_model import OutputRole
 
 
 class RedisMessages(BaseModel):
@@ -13,7 +15,9 @@ class RedisMessages(BaseModel):
     @model_validator(mode="after")
     def check_content_and_tool_calls(cls, values):
         if not values.content and not values.tool_calls:
-            raise ValueError("Either content or tool_calls must be provided to RedisMessages.")
+            raise ValueError(
+                "Either content or tool_calls must be provided to RedisMessages."
+            )
         return values
 
     def to_dict(self):

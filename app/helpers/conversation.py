@@ -1,9 +1,10 @@
 from typing import List
 from uuid import uuid4
-from api.external.gpt_clients.gpt_enums import GPTRole
-from database.database_calls import postgres_database
-from database.database_models.conversations_table_model import ConversationsTable
-from redis_services.redis_methods import set_conversation_id
+
+from app.api.external.gpt_clients.gpt_enums import GPTRole
+from app.database.database_calls import postgres_database
+from app.database.database_models.conversations_table_model import ConversationsTable
+from app.redis_services.redis_methods import set_conversation_id
 
 
 async def create_new_conversation(user_id: str) -> str:

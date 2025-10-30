@@ -1,9 +1,11 @@
 import logging
 import traceback
+from time import time
+
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
-from time import time
-from utils.logger.logger import Logger
+
+from app.utils.logger.logger import Logger
 
 logger = Logger()
 
@@ -11,7 +13,9 @@ logger = Logger()
 def format_detailed_traceback(exc: Exception) -> str:
     tb_list = traceback.format_exception(type(exc), exc, exc.__traceback__)
     exception_message = tb_list[-1].strip()
-    location_info = tb_list[-2].strip() if len(tb_list) > 1 else "Location info not available"
+    location_info = (
+        tb_list[-2].strip() if len(tb_list) > 1 else "Location info not available"
+    )
     detailed_traceback = f"{location_info}\n{exception_message}"
 
     return detailed_traceback
@@ -37,7 +41,9 @@ class RequestResponseLoggingMiddleware(BaseHTTPMiddleware):
                 "Unhandled exception occurred during request processing",
                 level=logging.ERROR,
                 request_path=request.url.path,
-                request_body=getattr(request.state, "body", "Request body not available"),
+                request_body=getattr(
+                    request.state, "body", "Request body not available"
+                ),
                 exception=str(exc),
                 traceback=format_detailed_traceback(exc),
             )
