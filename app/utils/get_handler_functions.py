@@ -17,8 +17,10 @@ async def compile_function_metadata(current_handler_dir: str) -> List[Dict[str, 
         logger.log(f"Functions directory not found: {functions_dir}")
         return tools
 
+    added_path = False
     if functions_dir not in sys.path:
         sys.path.insert(0, functions_dir)
+        added_path = True
 
     function_files = [
         f[:-3]
@@ -33,7 +35,11 @@ async def compile_function_metadata(current_handler_dir: str) -> List[Dict[str, 
                 for meta_info in obj.meta:
                     tools.append({"type": "function", "function": meta_info})
 
-    sys.path.remove(functions_dir)
+    if added_path:
+        try:
+            sys.path.remove(functions_dir)
+        except ValueError:
+            pass
 
     return tools
 
@@ -46,8 +52,10 @@ async def compile_function_map(current_handler_dir: str) -> Dict[str, Any]:
         logger.log(f"Functions directory not found: {functions_dir}")
         return function_map
 
+    added_path = False
     if functions_dir not in sys.path:
         sys.path.insert(0, functions_dir)
+        added_path = True
 
     function_files = [
         f[:-3]
@@ -61,6 +69,10 @@ async def compile_function_map(current_handler_dir: str) -> Dict[str, Any]:
             if hasattr(obj, "meta"):
                 function_map[name] = obj
 
-    sys.path.remove(functions_dir)
+    if added_path:
+        try:
+            sys.path.remove(functions_dir)
+        except ValueError:
+            pass
 
     return function_map

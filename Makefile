@@ -1,3 +1,4 @@
+.PHONY: up migrate setup
 # Makefile for Docker-native development workflow
 # Use these commands for all regular development tasks
 
@@ -6,8 +7,8 @@ up:
 	docker compose up --build -d
 
 # Stop and remove all services and persistent volumes
-# down:
-# 	docker compose down -v
+down:
+	docker compose down
 
 # Run Alembic database migrations inside Docker
 migrate:

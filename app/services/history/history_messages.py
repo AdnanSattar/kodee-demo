@@ -1,5 +1,11 @@
 from typing import Dict
 
+from asyncpg import (
+    ForeignKeyViolationError,
+    OperationalError,
+    PostgresError,
+    UniqueViolationError,
+)
 from fastapi import status
 from fastapi.responses import JSONResponse
 
@@ -19,7 +25,12 @@ async def history_messages_service(conversation_id: str) -> Dict | JSONResponse:
         history_messages = await postgres_database.get_history_by_conversation_id(
             conversation_id
         )
-    except Exception as exception:
+    except (
+        PostgresError,
+        OperationalError,
+        UniqueViolationError,
+        ForeignKeyViolationError,
+    ) as exception:
         logger.log(
             "Failed fetching messages from database",
             conversation_id=conversation_id,
@@ -32,6 +43,9 @@ async def history_messages_service(conversation_id: str) -> Dict | JSONResponse:
             ).convert_to_error_response(),
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+    except Exception:
+        # For truly unexpected errors, prefer not to hide bugs. Re-raise.
+        raise
 
     if not history_messages:
         return JSONResponse(

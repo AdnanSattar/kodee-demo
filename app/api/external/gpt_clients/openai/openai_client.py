@@ -22,8 +22,17 @@ from app.utils.logger.logger import Logger
 
 TIMEOUT_SECONDS = 45
 DEFAULT_MAX_TOKENS = 2048
+
+
+class MissingAPIKeyError(RuntimeError):
+    """Raised when the OPENAI_API_KEY environment variable is missing."""
+
+    def __init__(self):
+        super().__init__("OPENAI_API_KEY environment variable is required")
+
+
 if not OPENAI_API_KEY:
-    raise RuntimeError("OPENAI_API_KEY environment variable is required")
+    raise MissingAPIKeyError()
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY, timeout=TIMEOUT_SECONDS)
 
 logger = Logger()
@@ -146,7 +155,7 @@ class OpenAIChat:
             return response
         except Exception as e:
             logger.log(
-                f"GPT Exception occurred",
+                "GPT Exception occurred",
                 level=logging.ERROR,
                 service="OpenAI",
                 payload=str(e),

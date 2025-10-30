@@ -1,5 +1,6 @@
 from typing import Dict
 
+from asyncpg import PostgresError
 from fastapi import status
 from fastapi.responses import JSONResponse
 
@@ -19,16 +20,42 @@ async def history_events_service(conversation_id: str) -> Dict | JSONResponse:
         history_events = await postgres_database.get_events_by_conversation_id(
             conversation_id
         )
-    except Exception as exception:
+    except TimeoutError as timeout_exc:
         logger.log(
-            "Failed fetching events from database",
+            "Timeout while fetching events from database",
+            conversation_id=conversation_id,
+            payload=timeout_exc,
+        )
+        return JSONResponse(
+            content=HistoryAPIResponse(
+                status=HistoryResponseStatusCode.ERROR,
+                error_message="Timeout fetching events from database",
+            ).convert_to_error_response(),
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+        )
+    except PostgresError as exception:
+        logger.log(
+            "Database error while fetching events from database",
             conversation_id=conversation_id,
             payload=exception,
         )
         return JSONResponse(
             content=HistoryAPIResponse(
                 status=HistoryResponseStatusCode.ERROR,
-                error_message="Failed fetching events from database",
+                error_message="Database error fetching events from database",
+            ).convert_to_error_response(),
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+    except Exception as exception:
+        logger.log(
+            "Unexpected error while fetching events from database",
+            conversation_id=conversation_id,
+            payload=exception,
+        )
+        return JSONResponse(
+            content=HistoryAPIResponse(
+                status=HistoryResponseStatusCode.ERROR,
+                error_message="Unexpected error fetching events from database",
             ).convert_to_error_response(),
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )

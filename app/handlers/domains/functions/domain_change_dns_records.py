@@ -19,7 +19,7 @@ from app.utils.function_decorator import meta
     },
 )
 async def domain_change_dns_records(
-    data: DefaultGPTFunctionParams, domain_name: str = None
+    data: DefaultGPTFunctionParams, domain_name: str | None = None
 ) -> GPTFunctionOutput:
     # EXAMPLE OF FUNCTION LOGGING
     await insert_function_log(

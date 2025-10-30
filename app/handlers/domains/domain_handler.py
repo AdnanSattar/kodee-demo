@@ -31,6 +31,7 @@ from app.models.handler_config_model import HandlerConfigModel
 from app.models.handler_response_model import HandlerResponse, HandlerResponseStatus
 from app.models.redis_messages_model import RedisMessages
 from app.redis_services.redis_methods import (
+    RedisError,
     get_assistant_part_id,
     get_conversation_metadata,
 )
@@ -60,9 +61,19 @@ class DomainChatHandler(BaseChatHandler):
         Keep your responses short and simple, up to 3 sentences.
         Your answers must be in markdown format."""
 
-        conversation_metadata = await get_conversation_metadata(
-            self.conversation_id, self.user_id
-        )
+        try:
+            conversation_metadata = await get_conversation_metadata(
+                self.conversation_id, self.user_id
+            )
+        except RedisError as e:
+            logger.exception(
+                f"RedisError retrieving conversation metadata: {e}",
+                extra={
+                    "user_id": self.user_id,
+                    "conversation_id": self.conversation_id,
+                },
+            )
+            conversation_metadata = None
 
         if conversation_metadata and conversation_metadata.domain_name:
             system_description += (

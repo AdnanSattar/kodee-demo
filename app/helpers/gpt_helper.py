@@ -36,8 +36,9 @@ async def get_conversation_history_with_system_prompt(
         exclude_if_field_matches={"role": OutputRole.TOOL},
     )
     return [
-        {"role": GPTRole.SYSTEM, "content": system_description}
-    ] + historical_messages
+        {"role": GPTRole.SYSTEM, "content": system_description},
+        *historical_messages,
+    ]
 
 
 async def trim_to_earliest_user_message(history_data: List[Dict]) -> List[Dict]:

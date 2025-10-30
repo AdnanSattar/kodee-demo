@@ -68,7 +68,7 @@ use.
 
 ### Environment Variables Example
 
-```
+```env
 DB_HOST=db               # Docker Compose Postgres service name
 DB_USERNAME=postgres
 DB_PASSWORD=postgres

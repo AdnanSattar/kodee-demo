@@ -65,7 +65,7 @@ async def is_seeking_human_assistance(conversation_id: str, user_id: str) -> boo
         raise InvalidGPTResponseException("GPT response was not valid JSON.")
 
     decoded_handoff_boolean = decoded_handoff_boolean.get(
-        "is_seeking_human_assistance", {}
+        "is_seeking_human_assistance", False
     )
 
     if isinstance(decoded_handoff_boolean, int):
