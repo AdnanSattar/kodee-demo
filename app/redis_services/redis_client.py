@@ -1,4 +1,5 @@
 import json
+import logging
 from enum import IntEnum
 from typing import Any, List, Optional
 
@@ -34,7 +35,7 @@ class RedisClient:
             )
             logger.log(
                 f"RedisClient initialized for host {REDIS_HOST}:{REDIS_PORT}",
-                level="INFO",
+                level=logging.INFO,
             )
 
     async def close(self) -> None:

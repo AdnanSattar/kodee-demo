@@ -42,11 +42,11 @@ class OpenAIChat:
     ) -> ChatCompletion | None:
         logger.log(
             "OpenAIChat.get_response called",
-            level="INFO",
-            model=str(model),
-            action_name=str(action_name),
-            team_name=str(team_name),
-            chatbot_name=str(chatbot_name),
+            level=logging.INFO,
+            model=model,
+            action_name=action_name,
+            team_name=team_name,
+            chatbot_name=chatbot_name,
         )
         try:
             start_time = time()
@@ -83,11 +83,11 @@ class OpenAIChat:
         except Exception as e:
             logger.log(
                 f"Exception in get_response: {e}",
-                level="ERROR",
-                model=str(model),
-                action_name=str(action_name),
-                team_name=str(team_name),
-                chatbot_name=str(chatbot_name),
+                level=logging.ERROR,
+                model=model,
+                action_name=action_name,
+                team_name=team_name,
+                chatbot_name=chatbot_name,
             )
             raise
 
