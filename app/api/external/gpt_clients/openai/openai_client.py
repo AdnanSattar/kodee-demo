@@ -74,7 +74,7 @@ class OpenAIChat:
                 prompt_tokens=response.usage.prompt_tokens,
                 completion_tokens=response.usage.completion_tokens,
                 total_tokens=response.usage.total_tokens,
-                requests=self.get_response.retry.statistics["attempt_number"],
+                requests=self.get_response.retry.statistics.get("attempt_number"),
                 response_time=process_time,
                 cost=total_cost,
             )
