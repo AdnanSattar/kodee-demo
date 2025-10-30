@@ -67,7 +67,7 @@ class DomainChatHandler(BaseChatHandler):
             )
         except RedisError as e:
             logger.exception(
-                f"RedisError retrieving conversation metadata: {e}",
+                "RedisError retrieving conversation metadata",
                 extra={
                     "user_id": self.user_id,
                     "conversation_id": self.conversation_id,
