@@ -40,6 +40,14 @@ class OpenAIChat:
         temperature: GPTTemperature = GPTTemperature.POINT_FIVE,
         max_tokens: int = DEFAULT_MAX_TOKENS,
     ) -> ChatCompletion | None:
+        logger.log(
+            "OpenAIChat.get_response called",
+            level="INFO",
+            model=str(model),
+            action_name=str(action_name),
+            team_name=str(team_name),
+            chatbot_name=str(chatbot_name),
+        )
         try:
             start_time = time()
 
@@ -74,17 +82,12 @@ class OpenAIChat:
             return response
         except Exception as e:
             logger.log(
-                "GPT Exception occurred",
-                level=logging.WARNING,
-                service="OpenAI",
-                payload=str(e),
-                model_name=model,
-                action_name=action_name,
-                method_name="get_response",
-                team_name=team_name,
-                chatbot_name=chatbot_name,
-                exception_type=type(e).__name__,
-                conversation_messages=filter_out_system_messages(messages),
+                f"Exception in get_response: {e}",
+                level="ERROR",
+                model=str(model),
+                action_name=str(action_name),
+                team_name=str(team_name),
+                chatbot_name=str(chatbot_name),
             )
             raise
 

@@ -25,6 +25,9 @@ def decode_json_string(json_string):
 async def get_conversation_history_with_system_prompt(
     system_description: str, conversation_id: str
 ) -> list[dict]:
+    logger.log(
+        f"get_conversation_history_with_system_prompt: {conversation_id}", level="INFO"
+    )
     historical_messages = await filter_history_messages(
         await fetch_entire_conversation_history(conversation_id=conversation_id),
         exclude_fields=["tool_calls"],

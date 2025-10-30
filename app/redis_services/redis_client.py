@@ -32,6 +32,10 @@ class RedisClient:
                 socket_timeout=REDIS_SOCKET_TIMEOUT,
                 socket_connect_timeout=REDIS_CONNECT_TIMEOUT,
             )
+            logger.log(
+                f"RedisClient initialized for host {REDIS_HOST}:{REDIS_PORT}",
+                level="INFO",
+            )
 
     async def close(self) -> None:
         await self.client.close()

@@ -29,6 +29,7 @@ chatbot_router = ChatbotRouter()
 async def chat_service(
     request: ChatMessage,
 ) -> ConversationMessagesOutput | HTTPException:
+    logger.log(f"chat_service called for user_id={request.user_id}", level="INFO")
     user_id = request.user_id
     conversation_id = await get_conversation_id(user_id)
 
