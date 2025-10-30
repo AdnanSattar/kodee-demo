@@ -1,4 +1,4 @@
-.PHONY: up migrate setup
+.PHONY: up migrate setup down
 # Makefile for Docker-native development workflow
 # Use these commands for all regular development tasks
 

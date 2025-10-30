@@ -1,3 +1,4 @@
+import asyncio
 from typing import Dict
 
 from asyncpg import PostgresError
@@ -20,16 +21,17 @@ async def history_events_service(conversation_id: str) -> Dict | JSONResponse:
         history_events = await postgres_database.get_events_by_conversation_id(
             conversation_id
         )
-    except TimeoutError as timeout_exc:
+    except (TimeoutError, asyncio.TimeoutError) as exception:
         logger.log(
-            "Timeout while fetching events from database",
+            "Timeout error while fetching events from database",
+            level=logging.ERROR,
             conversation_id=conversation_id,
-            payload=timeout_exc,
+            payload=exception,
         )
         return JSONResponse(
             content=HistoryAPIResponse(
                 status=HistoryResponseStatusCode.ERROR,
-                error_message="Timeout fetching events from database",
+                error_message="Query timed out while fetching events from database",
             ).convert_to_error_response(),
             status_code=status.HTTP_504_GATEWAY_TIMEOUT,
         )

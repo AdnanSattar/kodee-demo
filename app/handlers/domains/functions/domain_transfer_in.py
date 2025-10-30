@@ -19,8 +19,13 @@ from app.utils.function_decorator import meta
     },
 )
 async def domain_transfer_in(
-    _data: DefaultGPTFunctionParams, domain_name: str | None = None
+    _data: DefaultGPTFunctionParams, domain_name: str = None
 ) -> GPTFunctionOutput:
+    if not domain_name:
+        return GPTFunctionOutput(
+            status=OutputStatus.FAILURE,
+            message="Please provide the domain name to transfer.",
+        )
     # EXAMPLE OF POSSIBLE FUNCTION RESPONSE
     return GPTFunctionOutput(
         status=OutputStatus.SUCCESS,

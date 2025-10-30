@@ -104,7 +104,7 @@ class OpenAIChat:
                 exception_type=type(e).__name__,
                 conversation_messages=filter_out_system_messages(messages),
             )
-        raise
+            raise
 
     @openai_retry_strategy
     async def get_response_with_tools(
