@@ -74,7 +74,7 @@ async def is_seeking_human_assistance(conversation_id: str, user_id: str) -> boo
             "GPT response was not valid JSON dict for is_seeking_human_assistance."
         )
     decoded_handoff_boolean = decoded_handoff_boolean.get(
-        "is_seeking_human_assistance", {}
+        "is_seeking_human_assistance", False
     )
 
     if isinstance(decoded_handoff_boolean, int):

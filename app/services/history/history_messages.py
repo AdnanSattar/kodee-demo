@@ -1,11 +1,6 @@
 from typing import Dict
 
-from asyncpg import (
-    ForeignKeyViolationError,
-    OperationalError,
-    PostgresError,
-    UniqueViolationError,
-)
+from asyncpg import ForeignKeyViolationError, PostgresError, UniqueViolationError
 from fastapi import status
 from fastapi.responses import JSONResponse
 
@@ -27,7 +22,6 @@ async def history_messages_service(conversation_id: str) -> Dict | JSONResponse:
         )
     except (
         PostgresError,
-        OperationalError,
         UniqueViolationError,
         ForeignKeyViolationError,
     ) as exception:

@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import Dict
 
 from asyncpg import PostgresError
@@ -38,6 +39,7 @@ async def history_events_service(conversation_id: str) -> Dict | JSONResponse:
     except PostgresError as exception:
         logger.log(
             "Database error while fetching events from database",
+            level=logging.ERROR,
             conversation_id=conversation_id,
             payload=exception,
         )
@@ -51,6 +53,7 @@ async def history_events_service(conversation_id: str) -> Dict | JSONResponse:
     except Exception as exception:
         logger.log(
             "Unexpected error while fetching events from database",
+            level=logging.ERROR,
             conversation_id=conversation_id,
             payload=exception,
         )
