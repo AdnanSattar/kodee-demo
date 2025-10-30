@@ -1,19 +1,17 @@
-setup: first_run create_venv install_alembic run_migrations
+# Makefile for Docker-native development workflow
+# Use these commands for all regular development tasks
 
+# Start all services using Docker Compose and build if needed
 up:
-	docker-compose -f docker-compose.yml up --build
+	docker compose up --build -d
 
-first_run:
-	docker-compose -f docker-compose.yml up --build -d
+# Stop and remove all services and persistent volumes
+# down:
+# 	docker compose down -v
 
-create_venv:
-	python3 -m venv .venv
-	@echo "Virtual environment created."
+# Run Alembic database migrations inside Docker
+migrate:
+	docker compose exec web alembic upgrade head
 
-install_alembic:
-	. .venv/bin/activate; pip install alembic psycopg2-binary python-dotenv
-	@echo "Alembic and psycopg2 installed in the virtual environment."
-
-run_migrations:
-	. .venv/bin/activate; sleep 5; export DB_HOST=localhost; alembic upgrade head
-	@echo "Alembic migrations applied."
+# Setup = up + migrate, for convenience
+setup: up migrate

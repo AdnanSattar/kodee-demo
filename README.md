@@ -53,6 +53,31 @@ post: [How we built one of the most advanced LLM-based chat assistants: Lessons 
 This command starts all the necessary services. Your **Kodee-demo** environment should now be up and running, ready for
 use.
 
+## Quickstart: Docker Compose
+
+1. Clone the repo and copy `.env.example` to `.env`.
+2. Start the stack and auto-run migrations:
+
+   ```bash
+   docker compose up --build -d
+   make migrate      # Or: docker compose exec web alembic upgrade head
+   ```
+
+- You can start/stop containers with `make up` and `make down`.
+- Environment variables are managed in `.env`—see `.env.example` for required keys.
+
+### Environment Variables Example
+
+```
+DB_HOST=db               # Docker Compose Postgres service name
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_NAME=kodee
+REDIS_HOST=redis         # Docker Compose Redis service name
+REDIS_PASSWORD=localpass
+OPENAI_API_KEY=sk-xxx    # Your OpenAI key if needed
+```
+
 ## API endpoints
 
 ### Initialize chat session
